@@ -318,23 +318,23 @@ func (j *JwtVerifier) validateIss(issuer interface{}) error {
 	return nil
 }
 
-func (j *JwtVerifier) validateScp(scp interface{}) error {
+func (j *JwtVerifier) validateScp(scope interface{}) error {
 	// Client Id can be optional, it will be validated if it is present in the ClaimsToValidate array
-	if cid, exists := j.ClaimsToValidate["scp"]; exists && scp != cid {
-		switch v := scp.(type) {
+	if scp, exists := j.ClaimsToValidate["scp"]; exists && scope != scp {
+		switch v := scope.(type) {
 		case string:
-			if v != cid {
-				return fmt.Errorf("scp: %s does not match %s", v, cid)
+			if v != scp {
+				return fmt.Errorf("scp: %s does not match %s", v, scp)
 			}
 		case []string:
 			for _, element := range v {
-				if element == cid {
+				if element == scp {
 					return nil
 				}
 			}
-			return fmt.Errorf("scp: %s does not match %s", v, cid)
+			return fmt.Errorf("scp: %s does not match %s", v, scp)
 		default:
-			return fmt.Errorf("unknown type for scp validation")
+			return fmt.Errorf("unknown type for scope validation")
 		}
 	}
 	return nil
