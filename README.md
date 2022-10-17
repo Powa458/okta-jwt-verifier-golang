@@ -43,9 +43,9 @@ verifier := jwtVerifierSetup.New()
 token, err := verifier.VerifyAccessToken("{JWT}")
 ```
 
-##### How to validate custom claim
+#### How to validate custom claim
 
-In additon to above example with, to validate custom claim follow exmaple below for scope and group custom claim in access token:
+In additon to above example, to validate custom claim follow example below for `scope` and `group` custom claim in access token:
 
 NOTE: This is only supported for access token validation.
 
