@@ -43,6 +43,71 @@ verifier := jwtVerifierSetup.New()
 token, err := verifier.VerifyAccessToken("{JWT}")
 ```
 
+##### How to validate custom claim
+
+In additon to above example with, to validate custom claim follow exmaple below for scope and group custom claim in access token:
+
+NOTE: This is only supported for access token validation.
+
+```go
+
+Claims := map[string]string{}
+Claims["aud"] = "api://default"
+Claims["cid"] = "{CLIENT_ID}"
+
+CustomClaims := map[string]func(interface{}) error
+CustomClaims["scp"] = func(scp interface{}) error {
+        
+        var valid bool
+
+        scopesToValidate := []string{"SCOPE1"}
+        scopesFromToken  := strings.Split(scp.(string), " ")
+
+        for _, stv := range scopesToValidate {
+                for _, sft := scopesFromToken {
+                        if sft == stv {
+                                valid = true
+                                break
+                        } else {
+                                valid = false
+                        }
+                }
+                if !valid {
+                        return fmt.Errorf("%s dp not contains %s", scopesFromToken, stv)
+                }
+        }
+        return nil
+}
+CustomClaims["group"] = func(group interface{}) error {
+
+         var valid bool
+
+        groupsToValidate := []string{"TestGroup"}
+        gtoupsFromToken  := group([]interface{})
+
+        for _, gtv := range groupsToValidate {
+                for _, gft := gtoupsFromToken {
+                        if gft.(string) == gtv {
+                                valid = true
+                                break
+                        } else {
+                                valid = false
+                        }
+                }
+                if !valid {
+                        return fmt.Errorf("%s dp not contains %s", gtoupsFromToken, gtv)
+                }
+        }
+        return nil
+}
+
+jwtVerifierSetup := jwtverifier.JwtVerifier{
+        Issuer: "{ISSUER}",
+        ClaimsToValidate: Claims,
+        CustomClaimsToVlaidate: CustomClaims
+}
+```
+
 #### Id Token Validation
 
 ```go

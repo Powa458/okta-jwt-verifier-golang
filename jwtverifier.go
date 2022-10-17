@@ -42,6 +42,10 @@ type JwtVerifier struct {
 
 	ClaimsToValidate map[string]interface{}
 
+	// Let pass to verifire additional struct with name and function binded to it. A key name will be passed to function as argument and it should be the same as claim which you want to validate.
+	// For example: to validate scopes in token, set key name and function argument to "scp".
+	CustomClaimsToVlaidate map[string]func(interface{}) error
+
 	Discovery discovery.Discovery
 
 	Adaptor adaptors.Adaptor
@@ -150,6 +154,13 @@ func (j *JwtVerifier) VerifyAccessToken(jwt string) (*Jwt, error) {
 	err = j.validateScp(token["scp"])
 	if err != nil {
 		return &myJwt, fmt.Errorf("the `Scopes` was not able to be validated. %w", err)
+	}
+
+	for k, v := range j.CustomClaimsToVlaidate {
+		err = v(token[k])
+		if err != nil {
+			return &myJwt, fmt.Errorf("the claim `%s` was not able to be validated. %w", k, err)
+		}
 	}
 
 	return &myJwt, nil
