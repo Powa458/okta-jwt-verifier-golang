@@ -40,7 +40,7 @@ var (
 type JwtVerifier struct {
 	Issuer string
 
-	ClaimsToValidate map[string]string
+	ClaimsToValidate map[string]interface{}
 
 	Discovery discovery.Discovery
 
@@ -145,6 +145,11 @@ func (j *JwtVerifier) VerifyAccessToken(jwt string) (*Jwt, error) {
 	err = j.validateIat(token["iat"])
 	if err != nil {
 		return &myJwt, fmt.Errorf("the `Issued At` was not able to be validated. %w", err)
+	}
+
+	err = j.validateScp(token["scp"])
+	if err != nil {
+		return &myJwt, fmt.Errorf("the `Scopes` was not able to be validated. %w", err)
 	}
 
 	return &myJwt, nil
@@ -309,6 +314,28 @@ func (j *JwtVerifier) validateIat(iat interface{}) error {
 func (j *JwtVerifier) validateIss(issuer interface{}) error {
 	if issuer != j.Issuer {
 		return fmt.Errorf("iss: %s does not match %s", issuer, j.Issuer)
+	}
+	return nil
+}
+
+func (j *JwtVerifier) validateScp(scp interface{}) error {
+	// Client Id can be optional, it will be validated if it is present in the ClaimsToValidate array
+	if cid, exists := j.ClaimsToValidate["scp"]; exists && scp != cid {
+		switch v := scp.(type) {
+		case string:
+			if v != cid {
+				return fmt.Errorf("scp: %s does not match %s", v, cid)
+			}
+		case []string:
+			for _, element := range v {
+				if element == cid {
+					return nil
+				}
+			}
+			return fmt.Errorf("scp: %s does not match %s", v, cid)
+		default:
+			return fmt.Errorf("unknown type for scp validation")
+		}
 	}
 	return nil
 }

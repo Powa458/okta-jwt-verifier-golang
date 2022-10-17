@@ -77,7 +77,7 @@ func Test_can_validate_iss_from_issuer_provided(t *testing.T) {
 }
 
 func Test_can_validate_nonce(t *testing.T) {
-	tv := map[string]string{}
+	tv := map[string]interface{}{}
 	tv["nonce"] = "abc123"
 
 	jvs := JwtVerifier{
@@ -94,7 +94,7 @@ func Test_can_validate_nonce(t *testing.T) {
 }
 
 func Test_can_validate_aud(t *testing.T) {
-	tv := map[string]string{}
+	tv := map[string]interface{}{}
 	tv["aud"] = "abc123"
 
 	jvs := JwtVerifier{
@@ -111,7 +111,7 @@ func Test_can_validate_aud(t *testing.T) {
 }
 
 func Test_can_validate_cid(t *testing.T) {
-	tv := map[string]string{}
+	tv := map[string]interface{}{}
 	tv["cid"] = "abc123"
 
 	jvs := JwtVerifier{
@@ -399,7 +399,7 @@ func Test_a_successful_authentication_can_have_its_tokens_parsed(t *testing.T) {
 	accessToken := fragmentParts["access_token"][0]
 	idToken := fragmentParts["id_token"][0]
 
-	tv := map[string]string{}
+	tv := map[string]interface{}{}
 	tv["aud"] = os.Getenv("CLIENT_ID")
 	tv["nonce"] = nonce
 	jv := JwtVerifier{
@@ -418,7 +418,7 @@ func Test_a_successful_authentication_can_have_its_tokens_parsed(t *testing.T) {
 		t.Errorf("issuer claim could not be pulled from access_token")
 	}
 
-	tv = map[string]string{}
+	tv = map[string]interface{}{}
 	tv["aud"] = "api://default"
 	tv["cid"] = os.Getenv("CLIENT_ID")
 	jv = JwtVerifier{
@@ -439,7 +439,7 @@ func Test_a_successful_authentication_can_have_its_tokens_parsed(t *testing.T) {
 	}
 
 	// Should validate without CID
-	tv = map[string]string{}
+	tv = map[string]interface{}{}
 	tv["aud"] = "api://default"
 	jv = JwtVerifier{
 		Issuer:           os.Getenv("ISSUER"),
