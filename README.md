@@ -73,7 +73,7 @@ CustomClaims["scp"] = func(scp interface{}) error {
                         }
                 }
                 if !valid {
-                        return fmt.Errorf("%s dp not contains %s", scopesFromToken, stv)
+                        return fmt.Errorf("%s do not contains %s", scopesFromToken, stv)
                 }
         }
         return nil
@@ -83,10 +83,10 @@ CustomClaims["group"] = func(group interface{}) error {
          var valid bool
 
         groupsToValidate := []string{"TestGroup"}
-        gtoupsFromToken  := group([]interface{})
+        groupsFromToken  := group([]interface{})
 
         for _, gtv := range groupsToValidate {
-                for _, gft := gtoupsFromToken {
+                for _, gft := groupsFromToken {
                         if gft.(string) == gtv {
                                 valid = true
                                 break
@@ -95,7 +95,7 @@ CustomClaims["group"] = func(group interface{}) error {
                         }
                 }
                 if !valid {
-                        return fmt.Errorf("%s dp not contains %s", gtoupsFromToken, gtv)
+                        return fmt.Errorf("%s do not contains %s", groupsFromToken, gtv)
                 }
         }
         return nil
@@ -106,6 +106,10 @@ jwtVerifierSetup := jwtverifier.JwtVerifier{
         ClaimsToValidate: Claims,
         CustomClaimsToVlaidate: CustomClaims
 }
+
+verifier := jwtVerifierSetup.New()
+
+token, err := verifier.VerifyAccessToken("{JWT}")
 ```
 
 #### Id Token Validation
